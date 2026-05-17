@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dormio — Sleep & Recovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A0A1A;
+  --surface:#12122A;
+  --card:#1A1A35;
+  --violet:#7C3AED;
+  --violet-light:#A78BFA;
+  --cyan:#06B6D4;
+  --cyan-light:#67E8F9;
+  --pink:#EC4899;
+  --pink-light:#F9A8D4;
+  --amber:#F59E0B;
+  --text:#F0EEFF;
+  --muted:#8B83B0;
+  --border:rgba(124,58,237,0.2);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:1rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(10,10,26,0.8);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:0.05em;background:linear-gradient(90deg,var(--violet-light),var(--cyan-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:0.8rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s}
+.nav-links a:hover{color:var(--violet-light)}
+.nav-pill{background:var(--violet);color:white;padding:0.45rem 1.2rem;border-radius:100px;font-size:0.8rem;font-weight:500;text-decoration:none;transition:opacity 0.2s}
+.nav-pill:hover{opacity:0.85}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  padding-top:72px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-glow{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(120px);
+  pointer-events:none;
+}
+.glow1{width:600px;height:600px;background:rgba(124,58,237,0.25);top:-100px;right:-100px}
+.glow2{width:400px;height:400px;background:rgba(6,182,212,0.15);bottom:0;left:0}
+.glow3{width:300px;height:300px;background:rgba(236,72,153,0.12);top:40%;left:40%}
+
+.hero-left{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:5rem 3.5rem 5rem 5rem;
+  position:relative;z-index:2;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.72rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--cyan-light);
+  background:rgba(6,182,212,0.1);
+  border:1px solid rgba(6,182,212,0.25);
+  padding:0.4rem 1rem;border-radius:100px;
+  margin-bottom:2rem;width:fit-content;
+  animation:fadeUp 0.6s ease both;
+}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite}
+
+.hero-title{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(3rem,5vw,4.5rem);
+  font-weight:800;
+  line-height:1.08;
+  margin-bottom:1.5rem;
+  animation:fadeUp 0.6s 0.1s ease both;
+}
+.gradient-text{background:linear-gradient(135deg,var(--violet-light) 0%,var(--cyan-light) 50%,var(--pink-light) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+.hero-sub{
+  font-size:1.05rem;color:var(--muted);max-width:420px;
+  font-weight:300;margin-bottom:2.5rem;
+  animation:fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeUp 0.6s 0.3s ease both}
+.btn-primary{
+  background:linear-gradient(135deg,var(--violet),var(--cyan));
+  color:white;padding:0.8rem 2rem;border-radius:100px;
+  font-size:0.9rem;font-weight:500;text-decoration:none;
+  transition:opacity 0.2s,transform 0.2s;
+}
+.btn-primary:hover{opacity:0.9;transform:translateY(-1px)}
+.btn-ghost{
+  color:var(--text);padding:0.8rem 2rem;border-radius:100px;
+  font-size:0.9rem;font-weight:500;text-decoration:none;
+  border:1px solid var(--border);
+  transition:border-color 0.2s;
+}
+.btn-ghost:hover{border-color:var(--violet-light)}
+
+/* HERO RIGHT — SLEEP CLOCK VISUAL */
+.hero-right{
+  position:relative;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  padding:3rem;
+}
+.clock-wrap{position:relative;width:340px;height:340px}
+.clock-ring{
+  width:100%;height:100%;
+  border-radius:50%;
+  background:conic-gradient(
+    var(--violet) 0deg,
+    var(--cyan) 100deg,
+    var(--pink) 180deg,
+    var(--violet) 270deg,
+    #1A1A35 270deg,
+    #1A1A35 360deg
+  );
+  display:flex;align-items:center;justify-content:center;
+  animation:spin-slow 20s linear infinite;
+}
+.clock-inner{
+  width:280px;height:280px;border-radius:50%;
+  background:var(--surface);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0.3rem;
+  border:1px solid var(--border);
+}
+.clock-label{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted)}
+.clock-time{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,var(--violet-light),var(--cyan-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.clock-sub{font-size:0.82rem;color:var(--muted)}
+
+.float-chip{
+  position:absolute;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:0.8rem 1.2rem;
+  font-size:0.82rem;
+  white-space:nowrap;
+  backdrop-filter:blur(8px);
+}
+.float-chip .chip-val{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;display:block}
+.fc1{top:5%;left:-10%;animation:float 4s ease-in-out infinite;color:var(--cyan-light)}
+.fc2{bottom:8%;right:-8%;animation:float 4s 1.5s ease-in-out infinite;color:var(--pink-light)}
+.fc3{top:50%;right:-15%;animation:float 4s 0.8s ease-in-out infinite;color:var(--violet-light)}
+
+/* STRIP */
+.strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.strip-item{
+  padding:2rem 2.5rem;
+  border-right:1px solid var(--border);
+  text-align:center;
+  transition:background 0.2s;
+}
+.strip-item:last-child{border-right:none}
+.strip-item:hover{background:rgba(124,58,237,0.08)}
+.strip-num{
+  font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;
+  background:linear-gradient(135deg,var(--violet-light),var(--cyan-light));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:block;margin-bottom:0.25rem;
+}
+.strip-desc{font-size:0.8rem;color:var(--muted)}
+
+/* SECTIONS */
+section{padding:6rem 5rem}
+.sec-tag{font-size:0.7rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--violet-light);margin-bottom:0.6rem}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;line-height:1.15;margin-bottom:1rem}
+.sec-sub{color:var(--muted);max-width:520px;font-size:1rem;font-weight:300}
+
+/* STAGES */
+.stages-section{background:var(--bg)}
+.stages-header{margin-bottom:3.5rem}
+.stages-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)}
+.stage-card{
+  background:var(--bg);
+  padding:2.5rem 1.8rem;
+  position:relative;overflow:hidden;
+  transition:background 0.3s;
+}
+.stage-card:hover{background:var(--surface)}
+.stage-num{
+  font-family:'Syne',sans-serif;font-size:4rem;font-weight:800;
+  opacity:0.06;position:absolute;top:1rem;right:1.2rem;line-height:1;
+  color:white;
+}
+.stage-dot{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:1.2rem;
+}
+.stage-card h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.6rem}
+.stage-card p{font-size:0.87rem;color:var(--muted);line-height:1.75;font-weight:300}
+.stage-badge{
+  display:inline-block;margin-top:1rem;
+  font-size:0.7rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;
+  padding:0.3rem 0.8rem;border-radius:100px;
+}
+
+/* TIMELINE */
+.timeline-section{background:var(--surface)}
+.timeline-wrap{margin-top:3.5rem;position:relative}
+.timeline-wrap::before{
+  content:'';position:absolute;left:120px;top:0;bottom:0;
+  width:1px;background:var(--border);
+}
+.tl-item{
+  display:flex;gap:2.5rem;align-items:flex-start;
+  margin-bottom:2rem;position:relative;
+}
+.tl-time{
+  font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;
+  color:var(--muted);width:90px;text-align:right;flex-shrink:0;
+  padding-top:1.1rem;
+}
+.tl-dot{
+  width:14px;height:14px;border-radius:50%;flex-shrink:0;
+  margin-top:1.2rem;position:relative;z-index:1;
+  border:2px solid var(--bg);
+}
+.tl-body{
+  flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:1.2rem 1.5rem;
+  transition:border-color 0.2s;
+}
+.tl-body:hover{border-color:var(--violet)}
+.tl-body h4{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.3rem}
+.tl-body p{font-size:0.85rem;color:var(--muted);font-weight:300}
+
+/* MYTHS */
+.myths-section{background:var(--bg)}
+.myths-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:3.5rem}
+.myth-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:2rem;
+  transition:transform 0.3s,border-color 0.3s;
+}
+.myth-card:hover{transform:translateY(-3px);border-color:var(--violet)}
+.myth-label{
+  font-size:0.68rem;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.3rem 0.8rem;border-radius:100px;margin-bottom:1rem;display:inline-block;
+}
+.myth{background:rgba(236,72,153,0.15);color:var(--pink-light)}
+.fact{background:rgba(6,182,212,0.15);color:var(--cyan-light)}
+.myth-card h4{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.5rem}
+.myth-card p{font-size:0.87rem;color:var(--muted);font-weight:300;line-height:1.75}
+
+/* TIPS */
+.tips-section{background:var(--surface)}
+.tips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3.5rem}
+.tip{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:1.6rem;
+  transition:border-color 0.2s,transform 0.2s;
+  position:relative;overflow:hidden;
+}
+.tip:hover{border-color:var(--violet);transform:translateY(-2px)}
+.tip::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  opacity:0;transition:opacity 0.3s;
+}
+.tip:hover::after{opacity:1}
+.tip-icon{font-size:1.6rem;margin-bottom:0.8rem;display:block}
+.tip h4{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.4rem}
+.tip p{font-size:0.83rem;color:var(--muted);font-weight:300;line-height:1.7}
+
+/* CTA */
+.cta{
+  background:linear-gradient(135deg,#1a0a35 0%,#0a1a35 50%,#0a1a2a 100%);
+  text-align:center;padding:7rem 5rem;position:relative;overflow:hidden;
+}
+.cta-glow{
+  position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;
+  width:400px;height:400px;
+  background:rgba(124,58,237,0.3);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+}
+.cta h2{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:800;margin-bottom:1rem;position:relative}
+.cta p{color:var(--muted);max-width:500px;margin:0 auto 2.5rem;font-weight:300;position:relative}
+.cta-btn{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--violet),var(--cyan));
+  color:white;padding:1rem 3rem;border-radius:100px;
+  font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;text-decoration:none;
+  transition:opacity 0.2s,transform 0.2s;position:relative;
+}
+.cta-btn:hover{opacity:0.9;transform:translateY(-2px)}
+
+footer{
+  background:var(--bg);color:var(--muted);
+  text-align:center;padding:2rem;font-size:0.8rem;
+  border-top:1px solid var(--border);
+}
+footer span{color:var(--violet-light)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}
+  .nav-links,.nav-pill{display:none}
+  .hero{grid-template-columns:1fr}
+  .hero-right{min-height:300px}
+  .hero-left{padding:3rem 2rem}
+  .clock-wrap{width:240px;height:240px}
+  .clock-inner{width:196px;height:196px}
+  section{padding:4rem 2rem}
+  .strip{grid-template-columns:repeat(2,1fr)}
+  .stages-grid{grid-template-columns:1fr 1fr}
+  .myths-grid,.tips-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Dormio</div>
+  <ul class="nav-links">
+    <li><a href="#stages">Sleep Stages</a></li>
+    <li><a href="#timeline">Night Timeline</a></li>
+    <li><a href="#myths">Myths</a></li>
+    <li><a href="#tips">Tips</a></li>
+  </ul>
+  <a href="#tips" class="nav-pill">Start Sleeping Better</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding-top:72px">
+  <div class="hero-glow glow1"></div>
+  <div class="hero-glow glow2"></div>
+  <div class="hero-glow glow3"></div>
+
+  <div class="hero-left">
+    <div class="badge">🌙 &nbsp; Sleep Science · 2025</div>
+    <h1 class="hero-title">
+      <span class="gradient-text">Sleep isn't downtime.</span><br>
+      It's when you<br>become superhuman.
+    </h1>
+    <p class="hero-sub">Every night your brain performs miracles — consolidating memory, repairing cells, regulating hormones. Most people sleep through it wrong. Here's how to get it right.</p>
+    <div class="hero-btns">
+      <a href="#stages" class="btn-primary">Explore the Science</a>
+      <a href="#tips" class="btn-ghost">Quick Tips →</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="clock-wrap">
+      <div class="clock-ring">
+        <div class="clock-inner">
+          <span class="clock-label">Optimal sleep</span>
+          <span class="clock-time">8hrs</span>
+          <span class="clock-sub">4–5 full sleep cycles</span>
+        </div>
+      </div>
+    </div>
+    <div class="float-chip fc1">
+      <span class="chip-val">90 min</span>
+      Per sleep cycle
+    </div>
+    <div class="float-chip fc2">
+      <span class="chip-val">+40%</span>
+      Memory boost
+    </div>
+    <div class="float-chip fc3">
+      <span class="chip-val">3×</span>
+      Faster recovery
+    </div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip reveal">
+  <div class="strip-item">
+    <span class="strip-num">1 in 3</span>
+    <span class="strip-desc">adults are chronically sleep-deprived</span>
+  </div>
+  <div class="strip-item">
+    <span class="strip-num">700%</span>
+    <span class="strip-desc">more immune cells produced during deep sleep</span>
+  </div>
+  <div class="strip-item">
+    <span class="strip-num">24hrs</span>
+    <span class="strip-desc">awake = same cognitive impairment as being drunk</span>
+  </div>
+  <div class="strip-item">
+    <span class="strip-num">$411B</span>
+    <span class="strip-desc">lost annually in the US from sleep deprivation</span>
+  </div>
+</div>
+
+<!-- SLEEP STAGES -->
+<section class="stages-section" id="stages">
+  <div class="stages-header reveal">
+    <p class="sec-tag">The Architecture</p>
+    <h2 class="sec-title">Your brain cycles through<br>4 distinct stages every night</h2>
+    <p class="sec-sub">Each stage has a different job. Skip any of them — through alcohol, late nights, or poor sleep hygiene — and you pay a real biological cost.</p>
+  </div>
+
+  <div class="stages-grid reveal">
+    <div class="stage-card">
+      <span class="stage-num">1</span>
+      <div class="stage-dot" style="background:rgba(167,139,250,0.15)">😴</div>
+      <h3>Light Sleep (N1)</h3>
+      <p>The doorway into sleep. Muscle activity slows, you're easily woken. Lasts just 1–7 minutes per cycle. Your body temperature drops and heart rate begins to slow.</p>
+      <span class="stage-badge" style="background:rgba(167,139,250,0.15);color:var(--violet-light)">5% of night</span>
+    </div>
+    <div class="stage-card">
+      <span class="stage-num">2</span>
+      <div class="stage-dot" style="background:rgba(6,182,212,0.15)">🌀</div>
+      <h3>Core Sleep (N2)</h3>
+      <p>The bulk of your night. Sleep spindles fire — bursts of neural activity that protect sleep and transfer short-term memories into long-term storage. Critical for learning.</p>
+      <span class="stage-badge" style="background:rgba(6,182,212,0.15);color:var(--cyan-light)">45% of night</span>
+    </div>
+    <div class="stage-card">
+      <span class="stage-num">3</span>
+      <div class="stage-dot" style="background:rgba(236,72,153,0.15)">⚡</div>
+      <h3>Deep Sleep (N3)</h3>
+      <p>The most physically restorative stage. Growth hormone floods your body, repairing muscles and tissue. Your brain's glymphatic system activates — literally washing out toxic waste products linked to Alzheimer's.</p>
+      <span class="stage-badge" style="background:rgba(236,72,153,0.15);color:var(--pink-light)">25% of night</span>
+    </div>
+    <div class="stage-card">
+      <span class="stage-num">4</span>
+      <div class="stage-dot" style="background:rgba(245,158,11,0.15)">🌈</div>
+      <h3>REM Sleep</h3>
+      <p>The brain is almost as active as when awake. Dreams happen here. Emotional memories are processed and neutralized — a form of overnight therapy. Creativity and problem-solving are forged in REM.</p>
+      <span class="stage-badge" style="background:rgba(245,158,11,0.15);color:var(--amber)">25% of night</span>
+    </div>
+  </div>
+</section>
+
+<!-- NIGHT TIMELINE -->
+<section class="timeline-section" id="timeline">
+  <div class="reveal">
+    <p class="sec-tag">Hour by Hour</p>
+    <h2 class="sec-title">What happens while<br>you're unconscious</h2>
+    <p class="sec-sub">A typical 8-hour sleep is not one long phase — it's an orchestrated sequence your body runs with remarkable precision.</p>
+  </div>
+
+  <div class="timeline-wrap reveal">
+    <div class="tl-item">
+      <span class="tl-time">10:30 PM</span>
+      <div class="tl-dot" style="background:var(--violet)"></div>
+      <div class="tl-body">
+        <h4>Melatonin peaks — you fall asleep</h4>
+        <p>Core body temperature drops by 1–2°C, triggering sleep onset. First cycle begins with light sleep transitioning to deep sleep.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-time">11:30 PM</span>
+      <div class="tl-dot" style="background:var(--pink)"></div>
+      <div class="tl-body">
+        <h4>First deep sleep block — physical repair begins</h4>
+        <p>Peak growth hormone release. Muscles, tissue, and immune cells are repaired. This block is the longest and most intense deep sleep of the night.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-time">1:00 AM</span>
+      <div class="tl-dot" style="background:var(--cyan)"></div>
+      <div class="tl-body">
+        <h4>First REM cycle — memory consolidation</h4>
+        <p>Short and vivid. The hippocampus begins replaying the day's events, filing important memories and discarding irrelevant data. Lasts ~10 minutes.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-time">3:00 AM</span>
+      <div class="tl-dot" style="background:var(--violet-light)"></div>
+      <div class="tl-body">
+        <h4>REM cycles lengthen — emotional processing</h4>
+        <p>By the third and fourth cycles, REM dominates. Emotional experiences from the day are replayed and stripped of their emotional charge — this is why sleep helps you "feel better" about problems.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-time">5:00 AM</span>
+      <div class="tl-dot" style="background:var(--amber)"></div>
+      <div class="tl-body">
+        <h4>Cortisol begins rising — wake preparation</h4>
+        <p>Your body starts warming up, cortisol gently elevates to prepare you for alertness. Dreaming is most vivid. REM in the final hours is when creativity is born.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-time">6:30 AM</span>
+      <div class="tl-dot" style="background:var(--cyan-light)"></div>
+      <div class="tl-body">
+        <h4>Cycle completes — you wake naturally</h4>
+        <p>A full 8 hours delivers 4–5 complete cycles. Waking mid-cycle (via alarm cutting short REM) causes sleep inertia — that groggy, heavy feeling that can last hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MYTHS vs FACTS -->
+<section class="myths-section" id="myths">
+  <div class="reveal">
+    <p class="sec-tag">Myth Busting</p>
+    <h2 class="sec-title">What you think you know<br>about sleep is probably wrong</h2>
+    <p class="sec-sub">Sleep science has advanced dramatically in 20 years. Most of what "everyone knows" is outdated or flat-out false.</p>
+  </div>
+
+  <div class="myths-grid reveal">
+    <div class="myth-card">
+      <span class="myth-label myth">❌ Myth</span>
+      <h4>"You can catch up on sleep on weekends."</h4>
+      <p>Weekend recovery sleep cannot undo the cognitive and metabolic damage from weekday deprivation. Irregular schedules also disrupt your circadian rhythm, making weekday sleep worse.</p>
+    </div>
+    <div class="myth-card">
+      <span class="myth-label fact">✓ Fact</span>
+      <h4>Consistency beats duration.</h4>
+      <p>Sleeping 7 hours at the same time every night is more restorative than sleeping 9 irregular hours. Your circadian clock runs on schedule, not quantity alone.</p>
+    </div>
+    <div class="myth-card">
+      <span class="myth-label myth">❌ Myth</span>
+      <h4>"Alcohol helps you sleep better."</h4>
+      <p>Alcohol sedates rather than induces natural sleep. It dramatically suppresses REM sleep, causes fragmented sleep in the second half of the night, and worsens sleep quality overall — even in small amounts.</p>
+    </div>
+    <div class="myth-card">
+      <span class="myth-label fact">✓ Fact</span>
+      <h4>Naps can be genuinely powerful.</h4>
+      <p>A 20-minute nap before 3 PM boosts alertness, mood, and performance as effectively as a full night's sleep for many tasks. NASA found pilots who napped improved performance by 34%.</p>
+    </div>
+    <div class="myth-card">
+      <span class="myth-label myth">❌ Myth</span>
+      <h4>"Some people just need 5 hours."</h4>
+      <p>True short sleepers — genetically wired to thrive on less — represent less than 1% of the population. The vast majority who claim this are simply adapted to feeling bad and don't know what fully rested feels like.</p>
+    </div>
+    <div class="myth-card">
+      <span class="myth-label fact">✓ Fact</span>
+      <h4>Your bedroom temperature matters enormously.</h4>
+      <p>The ideal sleep temperature is 65–68°F (18–20°C). A room that's too warm prevents the core body temperature drop needed to initiate and maintain deep sleep. A cooling shower before bed helps trigger this drop.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TIPS -->
+<section class="tips-section" id="tips">
+  <div class="reveal">
+    <p class="sec-tag">Your Sleep Protocol</p>
+    <h2 class="sec-title">9 changes that will transform<br>your sleep within two weeks</h2>
+    <p class="sec-sub">Ranked by impact. Start with the first three — they alone will make a measurable difference.</p>
+  </div>
+
+  <div class="tips-grid reveal">
+    <div class="tip" style="border-top:2px solid var(--violet)">
+      <span class="tip-icon">⏰</span>
+      <h4>Lock your wake time</h4>
+      <p>Same time every day, including weekends. This single habit anchors your entire circadian rhythm and is the foundation everything else builds on.</p>
+    </div>
+    <div class="tip" style="border-top:2px solid var(--cyan)">
+      <span class="tip-icon">☀️</span>
+      <h4>Get sunlight within 60 min of waking</h4>
+      <p>Morning light sets your cortisol peak and programs your melatonin release 14–16 hours later. Even on cloudy days, outdoor light is 10× stronger than indoor lights.</p>
+    </div>
+    <div class="tip" style="border-top:2px solid var(--pink)">
+      <span class="tip-icon">🌡️</span>
+      <h4>Cool your bedroom to 18°C</h4>
+      <p>Temperature is the most underrated sleep variable. A cool room accelerates sleep onset and dramatically increases deep sleep duration.</p>
+    </div>
+    <div class="tip" style="border-top:2px solid var(--amber)">
+      <span class="tip-icon">📵</span>
+      <h4>Stop screens 60 min before bed</h4>
+      <p>Blue light tells your brain it's midday. Even with night mode on, the stimulation of content keeps your cortisol elevated. Try reading a physical book instead.</p>
+    </div>
+    <div class="tip" style="border-top:2px solid var(--violet-light)">
+      <span class="tip-icon">☕</span>
+      <h4>Cut caffeine after 2 PM</h4>
+      <p>Caffeine has a half-life of 5–7 hours. A 3 PM coffee still has significant caffeine in your system at midnight, suppressing adenosine and blocking deep sleep pressure.</p>
+    </div>
+    <div class="tip" style="border-top:2px solid var(--cyan-light)">
+      <span class="tip-icon">🛁</span>
+      <h4>Take a warm bath 1–2 hrs before bed</h4>
+      <p>Counterintuitively, warming your skin accelerates core body temperature drop afterwards — triggering the physiological signal your body uses to initiate sleep.</p>
+    </div>
+    <div class="tip" style="border-top:2px solid var(--pink-light)">
+      <span class="tip-icon">🫁</span>
+      <h4>Try 4-7-8 breathing to fall asleep</h4>
+      <p>Inhale for 4 counts, hold for 7, exhale for 8. This activates the parasympathetic nervous system, rapidly lowering heart rate and cortisol — most people fall asleep within minutes.</p>
+    </div>
+    <div class="tip" style="border-top:2px solid var(--amber)">
+      <span class="tip-icon">🏋️</span>
+      <h4>Exercise — but not within 3 hrs of bed</h4>
+      <p>Regular exercise increases deep sleep by up to 75%. But vigorous exercise too close to bedtime raises core temperature and cortisol, delaying sleep onset.</p>
+    </div>
+    <div class="tip" style="border-top:2px solid var(--violet)">
+      <span class="tip-icon">📔</span>
+      <h4>Offload your mind before sleeping</h4>
+      <p>Write down tomorrow's tasks before bed. This "completion" signal quiets the prefrontal cortex's rumination loop — the main reason people lie awake with a racing mind.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-glow"></div>
+  <h2 class="gradient-text reveal">Tonight could be the best<br>sleep of your life.</h2>
+  <p class="reveal">It starts with one decision. Pick one habit from above and commit to it for seven days. Your future self will thank you.</p>
+  <a href="#tips" class="cta-btn reveal">Get Your Sleep Protocol →</a>
+</section>
+
+<footer>
+  <p>Built by <span>Dormio</span> · Evidence-based sleep journalism · 2025</p>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}
+  })
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
